@@ -5,16 +5,16 @@ export default function Navbar() {
     <nav>
       <ul>
         <li>
-          <NavLink to="/pets">Pets</NavLink>
+          <NavLink to="/hdb">Hdb</NavLink>
         </li>
         <li>
-          <NavLink to="/pets/2">One</NavLink>
+          <NavLink to="/hdb/areas">Hdb area</NavLink>
         </li>
         <li>
-          <NavLink to="/pets/new">New</NavLink>
+          <NavLink to="/hdb/new">Hdb new</NavLink>
         </li>
         <li>
-          <NavLink to="/pets/2/edit">Edit</NavLink>
+          <NavLink to="/hdb/2/edit">Edit Hdb</NavLink>
         </li>
       </ul>
     </nav>

@@ -1,0 +1,19 @@
+info:
+  name: Hdb-resale-price-fetch
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: https://data.gov.sg/api/action/datastore_search?resource_id=d_8b84c4ee58e3cfc0ece0d773c8ca6abc
+  params:
+    - name: resource_id
+      value: d_8b84c4ee58e3cfc0ece0d773c8ca6abc
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

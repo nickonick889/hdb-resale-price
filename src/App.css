@@ -40,3 +40,21 @@
 .read-the-docs {
   color: #888;
 }
+
+
+.hdb-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  list-style: none;
+}
+
+.hdb-card {
+  border: 2px solid #333;
+  padding: 20px;
+  width: 150px;
+  height: 150px;
+  text-align: center;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}

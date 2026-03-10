@@ -1,20 +1,20 @@
-import { NavLink } from "react-router";
+import { NavLink } from "react-router-dom";
 
 export default function Navbar() {
   return (
     <nav>
       <ul>
         <li>
-          <NavLink to="/hdb">Hdb</NavLink>
+          <NavLink to="/hdbs">Hdb Listings</NavLink>
         </li>
         <li>
-          <NavLink to="/hdb/areas">Hdb area</NavLink>
+          <NavLink to="/watchlist">Watchlist</NavLink>
         </li>
         <li>
-          <NavLink to="/hdb/new">Hdb new</NavLink>
+          <NavLink to="/hdbs/new">Add Hdb</NavLink>
         </li>
         <li>
-          <NavLink to="/hdb/2/edit">Edit Hdb</NavLink>
+          <NavLink to="/hdbs/2">Edit Hdb</NavLink>
         </li>
       </ul>
     </nav>

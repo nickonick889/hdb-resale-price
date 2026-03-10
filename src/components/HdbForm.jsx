@@ -1,24 +1,35 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+
 const HdbForm = ({ addHdb }) => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    town: "",
-    block: "",
-    street_name: "",
-    resale_price: "",
-    flat_type: "3 ROOM",
-  });
+  const [submitError, setSubmitError] = useState("");
+  
+const [formData, setFormData] = useState({
+  town: '',
+  block: '',
+  street_name: '',
+  resale_price: '',
+  flat_type: '4 ROOM',
+  floor_area_sqm: '', 
+  remaining_lease: ''   
+});
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    addHdb(formData);
-    navigate("/hdbs");
+    setSubmitError("");
+
+    try {
+      await addHdb(formData);
+      navigate("/hdbs");
+    } catch (error) {
+      setSubmitError("Unable to save listing to Airtable. Please try again.");
+    }
   };
 
   return (
@@ -58,7 +69,22 @@ const HdbForm = ({ addHdb }) => {
           required
         />
 
+        <label>Floor Area (sqm):</label>
+        <input 
+        name="floor_area_sqm" 
+        type="number" 
+        value={formData.floor_area_sqm} 
+        onChange={handleChange} 
+        />
+        <label>Remaining Lease (e.g. 95 years):</label>
+        <input 
+          name="remaining_lease" 
+          value={formData.remaining_lease} 
+          onChange={handleChange} 
+        />
+
         <button type="submit">Add HDB</button>
+        {submitError && <p>{submitError}</p>}
       </form>
     </main>
   );

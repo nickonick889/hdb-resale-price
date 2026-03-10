@@ -6,15 +6,21 @@ import HdbList from "./components/HdbList";
 import HdbForm from "./components/HdbForm";
 import HdbDetails from "./components/HdbDetails";
 import Watchlist from "./pages/Watchlist";
+import { createHdb } from "./service/hdbService";
 
 const App = () => {
   const [hdbs, setHdbs] = useState(hdbDataRaw);
   const [watchlist, setWatchlist] = useState([]);
 
-  const addHdb = (newHdb) => {
-    // Generate a new ID by finding the max ID and adding 1
-    newHdb._id = hdbs.length > 0 ? Math.max(...hdbs.map((h) => h._id)) + 1 : 1;
-    setHdbs([...hdbs, newHdb]);
+  const addHdb = async (newHdb) => {
+    await createHdb(newHdb);
+
+    // Keep local list in sync so the user sees the new record immediately.
+    const createdHdb = {
+      ...newHdb,
+      _id: hdbs.length > 0 ? Math.max(...hdbs.map((h) => h._id)) + 1 : 1,
+    };
+    setHdbs([...hdbs, createdHdb]);
   };
 
   const addToWatchlist = (listing) => {

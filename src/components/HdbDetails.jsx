@@ -1,3 +1,17 @@
+//@ts-check
+/**
+ * /**
+ * @typedef {Object} HdbListing
+ * @property {number} _id
+ * @property {string} month
+ * @property {string} town
+ * @property {string} flat_type
+ * @property {string} block
+ * @property {string} street_name
+ * @property {number} floor_area_sqm
+ * @property {string} remaining_lease
+ * @property {number} resale_price
+ */
 import { useParams } from "react-router-dom";
 
 const HdbDetails = ({ hdbs, watchlist, addToWatchlist }) => {

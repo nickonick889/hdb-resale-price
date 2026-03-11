@@ -1,72 +1,31 @@
-import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-const HdbList = ({ hdbs, title = "HDB Listings", showFilters = false }) => {
-  const [selectedMonth, setSelectedMonth] = useState("all");
-  const [selectedTown, setSelectedTown] = useState("all");
-
-  const monthOptions = useMemo(() => {
-    const uniqueMonths = [
-      ...new Set(hdbs.map((hdb) => hdb.month).filter(Boolean)),
-    ];
-    return uniqueMonths.sort((left, right) => right.localeCompare(left));
-  }, [hdbs]);
-
-  const townOptions = useMemo(() => {
-    const uniqueTowns = [
-      ...new Set(hdbs.map((hdb) => hdb.town).filter(Boolean)),
-    ];
-    return uniqueTowns.sort((left, right) => left.localeCompare(right));
-  }, [hdbs]);
-
-  const filteredHdbs = useMemo(() => {
-    return hdbs.filter((hdb) => {
-      const matchMonth = selectedMonth === "all" || hdb.month === selectedMonth;
-      const matchTown = selectedTown === "all" || hdb.town === selectedTown;
-
-      return matchMonth && matchTown;
-    });
-  }, [hdbs, selectedMonth, selectedTown]);
+const HdbList = ({
+  hdbs,
+  title = "HDB Listings",
+  isLoading = false,
+  errorMessage = "",
+  currentPage,
+  totalPages,
+  onPageChange,
+}) => {
+  const hasPagination =
+    typeof currentPage === "number" &&
+    typeof totalPages === "number" &&
+    typeof onPageChange === "function";
 
   return (
     <main>
       <h1>{title}</h1>
-      {showFilters && (
-        <div className="hdb-filter-bar">
-          <label htmlFor="monthFilter">Month:</label>
-          <select
-            id="monthFilter"
-            value={selectedMonth}
-            onChange={(event) => setSelectedMonth(event.target.value)}
-          >
-            <option value="all">All</option>
-            {monthOptions.map((month) => (
-              <option key={month} value={month}>
-                {month}
-              </option>
-            ))}
-          </select>
 
-          <label htmlFor="townFilter">Area:</label>
-          <select
-            id="townFilter"
-            value={selectedTown}
-            onChange={(event) => setSelectedTown(event.target.value)}
-          >
-            <option value="all">All</option>
-            {townOptions.map((town) => (
-              <option key={town} value={town}>
-                {town}
-              </option>
-            ))}
-          </select>
-        </div>
+      {isLoading && <p>Loading listings...</p>}
+      {!isLoading && errorMessage && <p>{errorMessage}</p>}
+      {!isLoading && !errorMessage && hdbs.length === 0 && (
+        <p>No listings found.</p>
       )}
 
-      {filteredHdbs.length === 0 && <p>No listings found for this filter.</p>}
-
       <ul className="hdb-container">
-        {filteredHdbs.map((hdb) => (
+        {hdbs.map((hdb) => (
           <li key={hdb._id} className="hdb-card">
             <Link to={`/hdbs/${hdb._id}`}>
               <h3>{hdb.town}</h3>
@@ -78,6 +37,28 @@ const HdbList = ({ hdbs, title = "HDB Listings", showFilters = false }) => {
           </li>
         ))}
       </ul>
+
+      {hasPagination && (
+        <div className="hdb-pagination">
+          <button
+            type="button"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage <= 1 || isLoading}
+          >
+            Previous
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage >= totalPages || isLoading}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </main>
   );
 };

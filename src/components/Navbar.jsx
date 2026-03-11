@@ -5,16 +5,13 @@ export default function Navbar() {
     <nav>
       <ul>
         <li>
+          <NavLink to="/">Home</NavLink>
+        </li>
+        <li>
           <NavLink to="/hdbs">Hdb Listings</NavLink>
         </li>
         <li>
           <NavLink to="/watchlist">Watchlist</NavLink>
-        </li>
-        <li>
-          <NavLink to="/hdbs/new">Add Hdb</NavLink>
-        </li>
-        <li>
-          <NavLink to="/hdbs/2">Edit Hdb</NavLink>
         </li>
       </ul>
     </nav>

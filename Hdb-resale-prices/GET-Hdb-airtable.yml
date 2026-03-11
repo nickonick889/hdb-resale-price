@@ -8,7 +8,7 @@ http:
   url: https://api.airtable.com/v0/appKaz6joPu3GkP3r/Table%201/rec6dtMkIGeuAjebb
   headers:
     - name: Authorization
-      value: Bearer pathrpVBEtHRKsTaG.d18b8471f6bce73c77097cd4c48f822563895fa73a7262114475fe98b57c2722
+      value: Bearer {{VITE_AIRTABLE_TOKEN}}
     - name: Content-Type
       value: application/json
   body:

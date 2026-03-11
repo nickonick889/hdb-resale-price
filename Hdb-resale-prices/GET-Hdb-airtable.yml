@@ -1,0 +1,33 @@
+info:
+  name: GET-Hdb-airtable
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: https://api.airtable.com/v0/appKaz6joPu3GkP3r/Table%201/rec6dtMkIGeuAjebb
+  headers:
+    - name: Authorization
+      value: Bearer pathrpVBEtHRKsTaG.d18b8471f6bce73c77097cd4c48f822563895fa73a7262114475fe98b57c2722
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |
+      {
+              "_id": 4,
+              "month": "2017-01",
+              "town": "ANG MO KIO",
+              "flat_type": "3 ROOM",
+              "block": "465",
+              "floor_area_sqm": "68",
+              "remaining_lease": "62 years 01 month",
+              "resale_price": "265000"
+            }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -26,10 +26,11 @@ const HdbList = ({
 
       <ul className="hdb-container">
         {hdbs.map((hdb) => (
-          <li key={hdb._id} className="hdb-card">
-            <Link to={`/hdbs/${hdb._id}`}>
+          <li key={hdb._id || hdb.airtableId} className="hdb-card">
+            <Link to={`/hdbs/${hdb._id || hdb.airtableId}`}>
               <h3>{hdb.town}</h3>
               <p>Block {hdb.block}</p>
+              <p>Month {hdb.month || "N/A"}</p>
               <p>${Number(hdb.resale_price).toLocaleString()}</p>
               <p>{hdb.floor_area_sqm} sqm</p>
               <p>{hdb.remaining_lease}</p>

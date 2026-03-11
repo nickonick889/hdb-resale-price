@@ -12,14 +12,36 @@
  * @property {string} remaining_lease
  * @property {number} resale_price
  */
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-const HdbDetails = ({ hdbs, watchlist, addToWatchlist }) => {
+const HdbDetails = ({ hdbs, watchlist, addToWatchlist, addWatchlistError }) => {
   const { hdbId } = useParams();
-  const hdb = hdbs.find((item) => item._id === Number(hdbId));
-  const isInWatchlist = watchlist.some((item) => item._id === hdb?._id);
+  const [isAdding, setIsAdding] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+
+  const hdb =
+    hdbs.find((item) => String(item._id) === hdbId) ||
+    watchlist.find(
+      (item) => String(item._id) === hdbId || String(item.airtableId) === hdbId,
+    );
+
+  const isInWatchlist = watchlist.some(
+    (item) => String(item._id) === String(hdb?._id),
+  );
 
   if (!hdb) return <h2>HDB Listing Not Found!</h2>;
+
+  const handleClick = async () => {
+    setIsAdding(true);
+    try {
+      await addToWatchlist(hdb);
+      setJustAdded(true);
+      setTimeout(() => setJustAdded(false), 2000);
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
     <main>
@@ -30,6 +52,9 @@ const HdbDetails = ({ hdbs, watchlist, addToWatchlist }) => {
         </p>
         <p>
           <strong>Block:</strong> {hdb.block}
+        </p>
+        <p>
+          <strong>Transaction Month:</strong> {hdb.month || "N/A"}
         </p>
         <p>
           <strong>Price:</strong> ${Number(hdb.resale_price).toLocaleString()}
@@ -46,11 +71,23 @@ const HdbDetails = ({ hdbs, watchlist, addToWatchlist }) => {
 
         <button
           type="button"
-          onClick={() => addToWatchlist(hdb)}
-          disabled={isInWatchlist}
+          onClick={handleClick}
+          disabled={isInWatchlist || isAdding}
         >
-          {isInWatchlist ? "Already in Watchlist" : "Add to Watchlist"}
+          {justAdded
+            ? "✓ Added to Watchlist"
+            : isInWatchlist
+              ? "Already in Watchlist"
+              : isAdding
+                ? "Adding..."
+                : "Add to Watchlist"}
         </button>
+
+        {addWatchlistError && (
+          <p style={{ color: "red", marginTop: "1rem" }}>
+            Error: {addWatchlistError}
+          </p>
+        )}
       </div>
     </main>
   );

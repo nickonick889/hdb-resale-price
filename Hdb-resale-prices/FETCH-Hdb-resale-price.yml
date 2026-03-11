@@ -1,11 +1,11 @@
 info:
-  name: Hdb-resale-price-post-airtable
+  name: FETCH-Hdb-resale-price
   type: http
-  seq: 3
+  seq: 1
 
 http:
   method: GET
-  url: https://data.gov.sg/api/action/datastore_search?resource_id=d_8b84c4ee58e3cfc0ece0d773c8ca6abc&sortOrder=desc
+  url: https://data.gov.sg/api/action/datastore_search?resource_id=d_8b84c4ee58e3cfc0ece0d773c8ca6abc&sort=month desc
   headers:
     - name: x-api-key
       value: v2:d69f9f4c0d98a7edcbd11d970b4efcf6c0f55876961c94428040394f7ff71e73:uNE5WxwH91LRM4se-a1VYo3aSeY3ub9f
@@ -13,8 +13,8 @@ http:
     - name: resource_id
       value: d_8b84c4ee58e3cfc0ece0d773c8ca6abc
       type: query
-    - name: sortOrder
-      value: desc
+    - name: sort
+      value: month desc
       type: query
   auth: inherit
 

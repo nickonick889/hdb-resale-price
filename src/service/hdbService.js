@@ -4,14 +4,17 @@ const RESOURCE_ID = "d_8b84c4ee58e3cfc0ece0d773c8ca6abc";
 const AIRTABLE_URL = "https://api.airtable.com/v0/appKaz6joPu3GkP3r/Table%201";
 
 
-export async function getHdbResalePage(page = 1, pageSize = 100) {
-  const offset = (page - 1) * pageSize;
+export async function getHdbResalePage(offset = 0, pageSize = 100, filters = {}) {
   const query = new URLSearchParams({
     resource_id: RESOURCE_ID,
     limit: String(pageSize),
     offset: String(offset),
     sort: "month desc",
   });
+
+  if (Object.keys(filters).length > 0) {
+    query.set("filters", JSON.stringify(filters));
+  }
 
   const apiKey = import.meta.env.VITE_DATA_GOV_API_KEY;
   const headers = apiKey ? { "x-api-key": apiKey } : {};
@@ -31,7 +34,7 @@ export async function getHdbResalePage(page = 1, pageSize = 100) {
 
   const records = payload?.result?.records ?? [];
   const total = payload?.result?.total ?? records.length;
-  return { records, total, page, pageSize };
+  return { records, total, offset, pageSize };
 }
 
 
@@ -93,4 +96,14 @@ export async function createHdb(data) {
   });
   // Airtable returns { records: [{id: "...", fields: {...}}] }
   return response.records?.[0];
+}
+
+export async function deleteHdb(airtableId) {
+  if (!airtableId) {
+    throw new Error("Missing Airtable record id for watchlist removal.");
+  }
+
+  return fetchAirtable(`/${airtableId}`, {
+    method: "DELETE",
+  });
 }

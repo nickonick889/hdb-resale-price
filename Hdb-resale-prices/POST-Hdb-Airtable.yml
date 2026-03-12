@@ -8,23 +8,26 @@ http:
   url: https://api.airtable.com/v0/appKaz6joPu3GkP3r/Table%201
   headers:
     - name: Authorization
-      value: Bearer {{VITE_AIRTABLE_TOKEN}}
+      value: Bearer pathrpVBEtHRKsTaG.d18b8471f6bce73c77097cd4c48f822563895fa73a7262114475fe98b57c2722
     - name: Content-Type
       value: application/json
   body:
     type: json
     data: |-
       {
-        "fields": {
-          "town": "Ang Mo Kio",
-          "block": "465",
-          "resale_price": "500000",
-          "flat_type": "5 ROOM",
-          "remaining_lease": "62 years 01 month",
-          "area": "68",
-          "_id": "4"
-        }
-      }
+              "_id": 222273,
+              "month": "2026-03",
+              "town": "BEDOK",
+              "flat_type": "3 ROOM",
+              "block": "529",
+              "street_name": "BEDOK NTH ST 3",
+              "storey_range": "04 TO 06",
+              "floor_area_sqm": "68.00",
+              "flat_model": "New Generation",
+              "lease_commence_date": "1979",
+              "remaining_lease": "52 years 06 months",
+              "resale_price": "400000"
+            }
   auth: inherit
 
 settings:

@@ -105,6 +105,54 @@ button {
   margin-bottom: 16px;
 }
 
+.hdb-filter-form {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: nowrap;
+  margin: 0 0 16px;
+}
+
+.hdb-list-page {
+  text-align: left;
+}
+
+.hdb-filter-inputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.hdb-filter-field {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.hdb-filter-field label {
+  margin: 0;
+}
+
+.hdb-filter-field input {
+  min-width: 180px;
+}
+
+.hdb-filter-form button {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .hdb-filter-form {
+    flex-wrap: wrap;
+  }
+
+  .hdb-filter-inputs {
+    flex-wrap: wrap;
+  }
+}
+
 .hdb-card {
   border: 2px solid #333;
   padding: 10px;

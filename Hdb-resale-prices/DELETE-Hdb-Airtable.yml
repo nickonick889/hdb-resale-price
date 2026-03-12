@@ -1,11 +1,11 @@
 info:
-  name: GET-Hdb-airtable
+  name: DELETE-Hdb-Airtable
   type: http
-  seq: 4
+  seq: 5
 
 http:
-  method: GET
-  url: https://api.airtable.com/v0/appKaz6joPu3GkP3r/Table%201/rec6dtMkIGeuAjebb
+  method: DELETE
+  url: https://api.airtable.com/v0/appKaz6joPu3GkP3r/Table%201
   headers:
     - name: Authorization
       value: Bearer {{VITE_AIRTABLE_TOKEN}}
@@ -13,7 +13,11 @@ http:
       value: application/json
   body:
     type: json
-    data: ""
+    data: |-
+      {
+          "id": "rec6dtMkIGeuAjebb",
+          "deleted": true
+      }
   auth: inherit
 
 settings:

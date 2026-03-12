@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage";
 import Watchlist from "./pages/WatchlistPage";
 import {
   createHdb,
+  deleteHdb,
   getHdbResalePage,
   getWatchlist,
 } from "./service/hdbService";
@@ -15,12 +16,16 @@ const App = () => {
   const [hdbs, setHdbs] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [currentOffset, setCurrentOffset] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [townFilter, setTownFilter] = useState("");
+  const [blockFilter, setBlockFilter] = useState("");
   const [watchlist, setWatchlist] = useState([]);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
   const [watchlistError, setWatchlistError] = useState("");
-  const [addWatchlistError, setAddWatchlistError] = useState("");
+  const [watchlistActionError, setWatchlistActionError] = useState("");
+  const pageSize = 100;
+  const currentPage = Math.floor(currentOffset / pageSize) + 1;
 
   useEffect(() => {
     const fetchPage = async () => {
@@ -28,9 +33,13 @@ const App = () => {
       setErrorMessage("");
 
       try {
-        const result = await getHdbResalePage(currentPage, 100);
+        const filters = {
+          ...(townFilter ? { town: townFilter } : {}),
+          ...(blockFilter ? { block: blockFilter } : {}),
+        };
+        const result = await getHdbResalePage(currentOffset, pageSize, filters);
         setHdbs(result.records);
-        setTotalPages(Math.max(1, Math.ceil(result.total / result.pageSize)));
+        setHasNextPage(result.records.length === result.pageSize);
       } catch (error) {
         setErrorMessage(
           error?.message || "Unable to fetch HDB resale data right now.",
@@ -42,7 +51,7 @@ const App = () => {
     };
 
     fetchPage();
-  }, [currentPage]);
+  }, [currentOffset, townFilter, blockFilter]);
 
   useEffect(() => {
     const fetchWatchlist = async () => {
@@ -63,18 +72,43 @@ const App = () => {
     fetchWatchlist();
   }, []);
 
-  const handlePageChange = (nextPage) => {
-    if (nextPage < 1 || nextPage > totalPages) return;
-    setCurrentPage(nextPage);
+  const handlePageChange = (direction) => {
+    if (direction === "previous") {
+      setCurrentOffset((prev) => Math.max(0, prev - pageSize));
+      return;
+    }
+
+    if (direction === "next" && hasNextPage) {
+      setCurrentOffset((prev) => prev + pageSize);
+    }
   };
 
-  const handleAddToWatchlist = async (listing) => {
-    setAddWatchlistError("");
+  const handleTownFilterChange = (nextTown) => {
+    setTownFilter(nextTown.trim().toUpperCase());
+    setCurrentOffset(0);
+  };
+
+  const handleBlockFilterChange = (nextBlock) => {
+    setBlockFilter(nextBlock.trim().toUpperCase());
+    setCurrentOffset(0);
+  };
+
+  const handleToggleWatchlist = async (listing) => {
+    setWatchlistActionError("");
     const listingId = String(listing._id);
-    const exists = watchlist.some((item) => String(item._id) === listingId);
-    if (exists) return;
+    const existingWatchlistItem = watchlist.find(
+      (item) => String(item._id) === listingId,
+    );
 
     try {
+      if (existingWatchlistItem) {
+        await deleteHdb(existingWatchlistItem.airtableId);
+        setWatchlist((prev) =>
+          prev.filter((item) => String(item._id) !== listingId),
+        );
+        return { action: "removed" };
+      }
+
       const created = await createHdb(listing);
       setWatchlist((prev) => [
         ...prev,
@@ -84,10 +118,12 @@ const App = () => {
           airtableId: created?.id,
         },
       ]);
+      return { action: "added" };
     } catch (error) {
-      const errorMsg = error?.message || "Failed to add to watchlist";
-      setAddWatchlistError(errorMsg);
-      console.error("Failed to save to Airtable watchlist:", error);
+      const errorMsg = error?.message || "Failed to update watchlist";
+      setWatchlistActionError(errorMsg);
+      console.error("Failed to update Airtable watchlist:", error);
+      throw error;
     }
   };
 
@@ -105,7 +141,12 @@ const App = () => {
               isLoading={isLoading}
               errorMessage={errorMessage}
               currentPage={currentPage}
-              totalPages={totalPages}
+              townFilter={townFilter}
+              blockFilter={blockFilter}
+              hasPreviousPage={currentOffset > 0}
+              hasNextPage={hasNextPage}
+              onTownFilterChange={handleTownFilterChange}
+              onBlockFilterChange={handleBlockFilterChange}
               onPageChange={handlePageChange}
             />
           }
@@ -126,8 +167,8 @@ const App = () => {
             <HdbDetails
               hdbs={hdbs}
               watchlist={watchlist}
-              addToWatchlist={handleAddToWatchlist}
-              addWatchlistError={addWatchlistError}
+              toggleWatchlist={handleToggleWatchlist}
+              watchlistActionError={watchlistActionError}
             />
           }
         />

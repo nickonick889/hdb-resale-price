@@ -15,10 +15,59 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-const HdbDetails = ({ hdbs, watchlist, addToWatchlist, addWatchlistError }) => {
+const DETAIL_LABELS = {
+  _id: "Listing ID",
+  month: "Transaction Month",
+  town: "Town",
+  flat_type: "Flat Type",
+  block: "Block",
+  street_name: "Street Name",
+  storey_range: "Storey Range",
+  floor_area_sqm: "Floor Area",
+  flat_model: "Flat Model",
+  lease_commence_date: "Lease Commence Date",
+  remaining_lease: "Remaining Lease",
+  resale_price: "Resale Price",
+  area: "Area",
+};
+
+const HIDDEN_FIELDS = new Set(["airtableId"]);
+
+function formatLabel(fieldName) {
+  if (DETAIL_LABELS[fieldName]) {
+    return DETAIL_LABELS[fieldName];
+  }
+
+  return fieldName
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function formatValue(fieldName, value) {
+  if (value == null || value === "") {
+    return "N/A";
+  }
+
+  if (fieldName === "resale_price") {
+    return `$${Number(value).toLocaleString()}`;
+  }
+
+  if (fieldName === "floor_area_sqm" || fieldName === "area") {
+    return `${value} sqm`;
+  }
+
+  return String(value);
+}
+
+const HdbDetails = ({
+  hdbs,
+  watchlist,
+  toggleWatchlist,
+  watchlistActionError,
+}) => {
   const { hdbId } = useParams();
-  const [isAdding, setIsAdding] = useState(false);
-  const [justAdded, setJustAdded] = useState(false);
+  const [isUpdatingWatchlist, setIsUpdatingWatchlist] = useState(false);
+  const [lastAction, setLastAction] = useState("");
 
   const hdb =
     hdbs.find((item) => String(item._id) === hdbId) ||
@@ -30,16 +79,22 @@ const HdbDetails = ({ hdbs, watchlist, addToWatchlist, addWatchlistError }) => {
     (item) => String(item._id) === String(hdb?._id),
   );
 
+  const detailEntries = Object.entries(hdb).filter(
+    ([fieldName]) => !HIDDEN_FIELDS.has(fieldName),
+  );
+
   if (!hdb) return <h2>HDB Listing Not Found!</h2>;
 
   const handleClick = async () => {
-    setIsAdding(true);
+    setIsUpdatingWatchlist(true);
     try {
-      await addToWatchlist(hdb);
-      setJustAdded(true);
-      setTimeout(() => setJustAdded(false), 2000);
+      const result = await toggleWatchlist(hdb);
+      setLastAction(result?.action || "");
+      setTimeout(() => setLastAction(""), 2000);
+    } catch {
+      setLastAction("");
     } finally {
-      setIsAdding(false);
+      setIsUpdatingWatchlist(false);
     }
   };
 
@@ -47,45 +102,34 @@ const HdbDetails = ({ hdbs, watchlist, addToWatchlist, addWatchlistError }) => {
     <main>
       <h2>{hdb.street_name}</h2>
       <div className="details-box">
-        <p>
-          <strong>Town:</strong> {hdb.town}
-        </p>
-        <p>
-          <strong>Block:</strong> {hdb.block}
-        </p>
-        <p>
-          <strong>Transaction Month:</strong> {hdb.month || "N/A"}
-        </p>
-        <p>
-          <strong>Price:</strong> ${Number(hdb.resale_price).toLocaleString()}
-        </p>
-        <p>
-          <strong>Flat Type:</strong> {hdb.flat_type}
-        </p>
-        <p>
-          <strong>Remaining Lease:</strong> {hdb.remaining_lease}
-        </p>
-        <p>
-          <strong>Area:</strong> {hdb.floor_area_sqm} sqm
-        </p>
+        {detailEntries.map(([fieldName, value]) => (
+          <p key={fieldName}>
+            <strong>{formatLabel(fieldName)}:</strong>{" "}
+            {formatValue(fieldName, value)}
+          </p>
+        ))}
 
         <button
           type="button"
           onClick={handleClick}
-          disabled={isInWatchlist || isAdding}
+          disabled={isUpdatingWatchlist}
         >
-          {justAdded
-            ? "✓ Added to Watchlist"
-            : isInWatchlist
-              ? "Already in Watchlist"
-              : isAdding
-                ? "Adding..."
-                : "Add to Watchlist"}
+          {isUpdatingWatchlist
+            ? isInWatchlist
+              ? "Removing..."
+              : "Adding..."
+            : lastAction === "added"
+              ? "Added to Watchlist"
+              : lastAction === "removed"
+                ? "Removed from Watchlist"
+                : isInWatchlist
+                  ? "Already in Watchlist"
+                  : "Add to Watchlist"}
         </button>
 
-        {addWatchlistError && (
+        {watchlistActionError && (
           <p style={{ color: "red", marginTop: "1rem" }}>
-            Error: {addWatchlistError}
+            Error: {watchlistActionError}
           </p>
         )}
       </div>

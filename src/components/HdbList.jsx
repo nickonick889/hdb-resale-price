@@ -109,6 +109,7 @@ const HdbList = ({
             <Link to={`/hdbs/${hdb._id || hdb.airtableId}`}>
               <h3>{hdb.town}</h3>
               <p>Block {hdb.block}</p>
+              <p>Transaction Month: {hdb.month || "N/A"}</p>
               <p>${Number(hdb.resale_price).toLocaleString()}</p>
               <p>{hdb.flat_type}</p>
               <p>View full details</p>

@@ -94,8 +94,12 @@ export async function createHdb(data) {
     },
     body: JSON.stringify({ fields }),
   });
-  // Airtable returns { records: [{id: "...", fields: {...}}] }
-  return response.records?.[0];
+  // Airtable can return either a single record object or { records: [...] }.
+  if (response?.id) {
+    return response;
+  }
+
+  return response.records?.[0] ?? null;
 }
 
 export async function deleteHdb(airtableId) {

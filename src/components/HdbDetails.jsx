@@ -78,12 +78,11 @@ const HdbDetails = ({
   const isInWatchlist = watchlist.some(
     (item) => String(item._id) === String(hdb?._id),
   );
+  if (!hdb) return <h2>HDB Listing Not Found!</h2>;
 
   const detailEntries = Object.entries(hdb).filter(
     ([fieldName]) => !HIDDEN_FIELDS.has(fieldName),
   );
-
-  if (!hdb) return <h2>HDB Listing Not Found!</h2>;
 
   const handleClick = async () => {
     setIsUpdatingWatchlist(true);

@@ -102,7 +102,17 @@ const App = () => {
 
     try {
       if (existingWatchlistItem) {
-        await deleteHdb(existingWatchlistItem.airtableId);
+        let airtableId = existingWatchlistItem.airtableId;
+
+        // Recover missing ids from Airtable to support immediate add->remove flows.
+        if (!airtableId) {
+          const latestWatchlist = await getWatchlist();
+          airtableId = latestWatchlist.find(
+            (item) => String(item._id) === listingId,
+          )?.airtableId;
+        }
+
+        await deleteHdb(airtableId);
         setWatchlist((prev) =>
           prev.filter((item) => String(item._id) !== listingId),
         );
@@ -113,7 +123,7 @@ const App = () => {
       setWatchlist((prev) => [
         ...prev,
         {
-          ...listing,
+          ...(created?.fields || listing),
           _id: listingId,
           airtableId: created?.id,
         },
